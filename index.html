@@ -267,15 +267,7 @@
             
             <!-- Transaction Result (Hidden Initially) -->
             <div id="transactionResult" class="transaction-result hidden"></div>
-
-
-
-
-
-
-
-
-                    <!-- Add User Section (Hidden Initially) -->
+<!-- Add User Section (Hidden Initially) -->
         <div id="addUserDiv" class="hidden">
              <div class="form-group">
          <label for="newUserName">Full Name</label>
@@ -300,59 +292,8 @@
     <button class="btn btn-success" onclick="createUser()">Create User</button>
     <button class="btn cancel-btn" onclick="hideAddUser()">Cancel</button>
 </div>
-
-
-
-
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </div>
-
+ </div>
+</div>
     <script>
         let currentAccount = null;
         
@@ -575,40 +516,6 @@ async function createUser() {
         console.error(error);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
         function logout() {
     currentAccount = null;
     document.getElementById('login').classList.remove('hidden');
