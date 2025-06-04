@@ -9,7 +9,7 @@ CORS(app)
 db = mysql.connector.connect(
     host="localhost",
     user="root",
-    password="Madhukeshs513@",  # Use your MySQL root password here
+    password="",  # Use your MySQL root password here
     database="atm_db"
 )
 cursor = db.cursor()
