@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ATM Simulation</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --light-gray: #f5f5f5;
+            --dark-gray: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .atm-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .atm-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .atm-header h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .atm-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .account-info {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .account-info p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .account-number {
+            font-weight: bold;
+            font-size: 18px;
+            color: var(--primary-color);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .transaction-result {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .amount-input {
+            font-size: 18px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .cancel-btn {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .cancel-btn:hover {
+            background-color: var(--light-gray);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .atm-container {
+                border-radius: 0;
+            }
+            
+            body {
+                padding: 0;
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="atm-container">
+        <div class="atm-header">
+            <div class="logo">BANK</div>
+            <h2>ATM Simulation</h2>
+        </div>
+        
+        <div class="atm-body">
+            <!-- Login Section -->
+            <div id="login">
+                <div class="form-group">
+                    <label for="account_number">Account Number</label>
+                    <input type="text" id="account_number" class="form-control" placeholder="Enter account number">
+                </div>
+                <div class="form-group">
+                    <label for="pin">PIN</label>
+                    <input type="password" id="pin" class="form-control" placeholder="Enter 4-digit PIN" maxlength="4">
+                </div>
+                <button class="btn" onclick="login()">Login</button>
+                <!-- Add to login section, after the login button -->
+<button class="btn btn-secondary" onclick="showAddUser()">Create New Account</button>
+            </div>
+            
+            <!-- Main Menu (Hidden Initially) -->
+            <div id="menu" class="hidden">
+                <div class="account-info" id="accountInfo">
+                    <p>Welcome back,</p>
+                    <p class="account-number" id="accountNumberDisplay"></p>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="checkBalance()">Balance</button>
+                    <button class="btn" onclick="showWithdraw()">Withdraw</button>
+                    <button class="btn" onclick="showDeposit()">Deposit</button>
+                    <button class="btn btn-secondary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+            
+            <!-- Withdraw Section (Hidden Initially) -->
+            <div id="withdrawDiv" class="hidden">
+                <div class="form-group">
+                    <label for="withdrawAmount">Amount to Withdraw</label>
+                    <input type="number" id="withdrawAmount" class="form-control amount-input" placeholder="0.00">
+                </div>
+                <button class="btn" onclick="withdraw()">Confirm Withdraw</button>
+                <button class="btn cancel-btn" onclick="hideWithdraw()">Cancel</button>
+            </div>
+            
+            <!-- Deposit Section (Hidden Initially) -->
+            <div id="depositDiv" class="hidden">
+                <div class="form-group">
+                    <label for="depositAmount">Amount to Deposit</label>
+                    <input type="number" id="depositAmount" class="form-control amount-input" placeholder="0.00">
+                </div>
+                <button class="btn" onclick="deposit()">Confirm Deposit</button>
+                <button class="btn cancel-btn" onclick="hideDeposit()">Cancel</button>
+            </div>
+            
+            <!-- Transaction Result (Hidden Initially) -->
+            <div id="transactionResult" class="transaction-result hidden"></div>
+
+
+
+
+
+
+
+
+                    <!-- Add User Section (Hidden Initially) -->
+        <div id="addUserDiv" class="hidden">
+             <div class="form-group">
+         <label for="newUserName">Full Name</label>
+            <input type="text" id="newUserName" class="form-control" placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+        <label for="newUserEmail">Email</label>
+        <input type="email" id="newUserEmail" class="form-control" placeholder="Enter email">
+    </div>
+    <div class="form-group">
+        <label for="newUserPin">PIN (4 digits)</label>
+        <input type="password" id="newUserPin" class="form-control" placeholder="Enter 4-digit PIN" maxlength="4">
+    </div>
+    <div class="form-group">
+        <label for="newUserAccount">Account Number</label>
+        <input type="text" id="newUserAccount" class="form-control" placeholder="Enter account number">
+    </div>
+    <div class="form-group">
+        <label for="initialBalance">Initial Balance</label>
+        <input type="number" id="initialBalance" class="form-control" placeholder="0.00" value="0.00">
+    </div>
+    <button class="btn btn-success" onclick="createUser()">Create User</button>
+    <button class="btn cancel-btn" onclick="hideAddUser()">Cancel</button>
+</div>
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+
+    <script>
+        let currentAccount = null;
+        
+        async function login() {
+            const account_number = document.getElementById('account_number').value;
+            const pin = document.getElementById('pin').value;
+            
+            if (!account_number || !pin) {
+                showResult("Please enter both account number and PIN", "error");
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5001/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ account_number, pin })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    currentAccount = {
+                        id: data.account_id,
+                        number: account_number,
+                        balance: data.balance
+                    };
+                    
+                    document.getElementById('login').classList.add('hidden');
+                    document.getElementById('menu').classList.remove('hidden');
+                    document.getElementById('accountNumberDisplay').textContent = account_number;
+                    
+                    showResult("Login successful!", "success");
+                } else {
+                    showResult("Invalid account number or PIN", "error");
+                }
+            } catch (error) {
+                showResult("Error connecting to server", "error");
+                console.error(error);
+            }
+        }
+        
+        async function checkBalance() {
+            try {
+                const response = await fetch('http://localhost:5001/balance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ account_id: currentAccount.id })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    currentAccount.balance = data.balance;
+                    showResult(`Current balance: $${data.balance.toFixed(2)}`, "success");
+                } else {
+                    showResult("Failed to check balance", "error");
+                }
+            } catch (error) {
+                showResult("Error connecting to server", "error");
+                console.error(error);
+            }
+        }
+        
+        function showWithdraw() {
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('withdrawDiv').classList.remove('hidden');
+            document.getElementById('withdrawAmount').focus();
+        }
+        
+        function hideWithdraw() {
+            document.getElementById('withdrawDiv').classList.add('hidden');
+            document.getElementById('menu').classList.remove('hidden');
+            document.getElementById('withdrawAmount').value = '';
+        }
+        
+        async function withdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            
+            if (isNaN(amount) || amount <= 0) {
+                showResult("Please enter a valid amount", "error");
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5001/withdraw', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        account_id: currentAccount.id, 
+                        amount: amount 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    currentAccount.balance = data.new_balance;
+                    document.getElementById('withdrawAmount').value = '';
+                    hideWithdraw();
+                    showResult(
+                        `Withdrawal successful! New balance: $${data.new_balance.toFixed(2)}`, 
+                        "success"
+                    );
+                } else {
+                    showResult(data.message || "Withdrawal failed", "error");
+                }
+            } catch (error) {
+                showResult("Error connecting to server", "error");
+                console.error(error);
+            }
+        }
+        
+        function showDeposit() {
+            document.getElementById('menu').classList.add('hidden');
+            document.getElementById('depositDiv').classList.remove('hidden');
+            document.getElementById('depositAmount').focus();
+        }
+        
+        function hideDeposit() {
+            document.getElementById('depositDiv').classList.add('hidden');
+            document.getElementById('menu').classList.remove('hidden');
+            document.getElementById('depositAmount').value = '';
+        }
+        
+        async function deposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            
+            if (isNaN(amount) || amount <= 0) {
+                showResult("Please enter a valid amount", "error");
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5001/deposit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        account_id: currentAccount.id, 
+                        amount: amount 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === "success") {
+                    currentAccount.balance = data.new_balance;
+                    document.getElementById('depositAmount').value = '';
+                    hideDeposit();
+                    showResult(
+                        `Deposit successful! New balance: $${data.new_balance.toFixed(2)}`, 
+                        "success"
+                    );
+                } else {
+                    showResult("Deposit failed", "error");
+                }
+            } catch (error) {
+                showResult("Error connecting to server", "error");
+                console.error(error);
+            }
+        }
+
+
+        function showAddUser() {
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('addUserDiv').classList.remove('hidden');
+}
+
+function hideAddUser() {
+    document.getElementById('addUserDiv').classList.add('hidden');
+    document.getElementById('login').classList.remove('hidden');
+    // Clear all fields
+    document.getElementById('newUserName').value = '';
+    document.getElementById('newUserEmail').value = '';
+    document.getElementById('newUserPin').value = '';
+    document.getElementById('newUserAccount').value = '';
+    document.getElementById('initialBalance').value = '0.00';
+}
+
+async function createUser() {
+    const name = document.getElementById('newUserName').value;
+    const email = document.getElementById('newUserEmail').value;
+    const pin = document.getElementById('newUserPin').value;
+    const account_number = document.getElementById('newUserAccount').value;
+    const initial_balance = parseFloat(document.getElementById('initialBalance').value) || 0.00;
+
+    if (!name || !email || !pin || !account_number) {
+        showResult("Please fill all required fields", "error");
+        return;
+    }
+
+    if (pin.length !== 4) {
+        showResult("PIN must be 4 digits", "error");
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:5001/create_user', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                name, 
+                email, 
+                pin, 
+                account_number, 
+                initial_balance 
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === "success") {
+            showResult(`Account created successfully! Account Number: ${data.account_number}`, "success");
+            hideAddUser();
+        } else {
+            showResult(data.message || "Failed to create account", "error");
+        }
+    } catch (error) {
+        showResult("Error connecting to server", "error");
+        console.error(error);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        function logout() {
+    currentAccount = null;
+    document.getElementById('login').classList.remove('hidden');
+    document.getElementById('menu').classList.add('hidden');
+    document.getElementById('withdrawDiv').classList.add('hidden');
+    document.getElementById('depositDiv').classList.add('hidden');
+    document.getElementById('addUserDiv').classList.add('hidden'); // Add this line
+    document.getElementById('account_number').value = '';
+    document.getElementById('pin').value = '';
+    document.getElementById('transactionResult').classList.add('hidden');
+}
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('transactionResult');
+            resultDiv.textContent = message;
+            resultDiv.className = `transaction-result ${type}`;
+            resultDiv.classList.remove('hidden');
+            
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                resultDiv.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
